@@ -2,31 +2,36 @@ import { useState } from "react";
 import Slider from "./Slider";
 import { ICategoryItem } from "./types";
 
-const HomePage = () => {
-  const [list, setList] = useState<ICategoryItem[]>([
-    {
-      id: 1,
-      name: "Ноутбуки",
-      image:
-        "https://cdn.thewirecutter.com/wp-content/media/2022/10/laptopstopicpage-2048px-2029.jpg",
-    },
-  ]);
+import product from "../../assets/product/product_1.jpg";
+import Cards from "../card/Сards";
 
-  const viewList = list.map((item) => (
-    <tr key={item.id}>
-      <th scope="row">{item.id}</th>
-      <td>
-        <img src={item.image} alt="Якась фотка" width="75" />
-      </td>
-      <td>{item.name}</td>
-    </tr>
-  ));
+const HomePage = () => {
+  // const [list, setList] = useState<ICategoryItem[]>([
+  // {
+  //   id: 1,
+  //   name: "Ноутбуки",
+  //   image:
+  //     "https://cdn.thewirecutter.com/wp-content/media/2022/10/laptopstopicpage-2048px-2029.jpg",
+  // },
+  // {
+  //   id: 1,
+  // },
+  // ]);
+  // const viewList = list.map((item) => (
+  //   <tr key={item.id}>
+  //     <th scope="row">{item.id}</th>
+  //     <td>
+  //       <img src={item.image} alt="Якась фотка" width="75" />
+  //     </td>
+  //     <td>{item.name}</td>
+  //   </tr>
+  // ));
 
   return (
     <>
       {/* <Slider /> */}
-      <h1 className="text-center">Головна сторінка</h1>
-      <table className="table text-white-50">
+      {/* <h1 classNameName="text-center">Головна сторінка</h1>
+      <table classNameName="table text-white-50">
         <thead>
           <tr>
             <th scope="col">Id</th>
@@ -35,7 +40,8 @@ const HomePage = () => {
           </tr>
         </thead>
         <tbody>{viewList}</tbody>
-      </table>
+      </table> */}
+      <Cards />
     </>
   );
 };

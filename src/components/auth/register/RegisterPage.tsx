@@ -100,6 +100,34 @@ const RegisterPage = () => {
         </div>
 
         <div className="mb-3">
+          <label htmlFor="password" className="form-label">
+            Password
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            name="password"
+            onChange={onChangeHandler}
+            value={data.password}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="confirmPassword"
+            name="confirmPassword"
+            onChange={onChangeHandler}
+            value={data.confirmPassword}
+          />
+        </div>
+
+        <div className="mb-3">
           <label htmlFor="email" className="form-label">
             Email
           </label>
@@ -143,34 +171,6 @@ const RegisterPage = () => {
             {viewCountriesOption}
           </select>
         </div> */}
-
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            name="password"
-            onChange={onChangeHandler}
-            value={data.password}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="confirmPassword"
-            name="confirmPassword"
-            onChange={onChangeHandler}
-            value={data.confirmPassword}
-          />
-        </div>
 
         <InputFileGroup
           field="image"
