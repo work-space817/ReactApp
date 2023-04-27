@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Slider from "./Slider";
-import { ICategoryItem } from "./types";
-
+// import { ICategoryItem } from "./types";
 import product from "../../assets/product/product_1.jpg";
-import Cards from "../card/Сards";
+import CardItem from "../product/Cards";
+import { ICardItem } from "../product/types";
+import axios from "axios";
+import CardList from "../card/CardList";
+import { ICard } from "../card/types";
 
 const HomePage = () => {
   // const [list, setList] = useState<ICategoryItem[]>([
@@ -27,6 +30,33 @@ const HomePage = () => {
   //   </tr>
   // ));
 
+  const [items, setitems] = useState<ICard[]>([
+    // {
+    //   id: 1,
+    //   img: product,
+    //   name: "Asus Rog",
+    //   price: 12354,
+    //   title:
+    //     "Lorem, ipsum dolor sit amet consectetur adipisicin Veniam quidem eaque ut eveniet aut quis rerum. Asperiores accusamus harum ducimus velit odit ut. Saepe, iste optio laudantium sed aliquam sequi.",
+    // },
+  ]);
+
+  useEffect(() => {
+    fetchItem();
+  }, []);
+
+  async function fetchItem() {
+    try {
+      const response = await axios.get<ICard[]>(
+        "https://f21.allin.ml/api/Categories/list"
+      );
+      setitems(response.data);
+    } catch (error) {
+      alert(error);
+    }
+  }
+  console.log(items);
+
   return (
     <>
       {/* <Slider /> */}
@@ -41,7 +71,8 @@ const HomePage = () => {
         </thead>
         <tbody>{viewList}</tbody>
       </table> */}
-      <Cards />
+
+      <CardList cards={items} />
     </>
   );
 };

@@ -19,8 +19,6 @@ body {
 
 .container {
   color: white;
-  display: flex;
-  flex-direction: row;
 }
 
 .btn-outline-success {

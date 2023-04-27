@@ -1,11 +1,18 @@
 import { ChangeEvent, FC, InputHTMLAttributes, useState } from "react";
+import defaultImage from "../../assets/defaultImage.jpg";
+// import "./style.css";
 
 interface InputFileGroupProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
   field: string;
   onSelectFile: (file: File) => void;
 }
 
-const InputFileGroup: FC<InputFileGroupProps> = ({ field, onSelectFile }) => {
+const InputFileGroup: FC<InputFileGroupProps> = ({
+  label = "Оберіть файл",
+  field,
+  onSelectFile,
+}) => {
   const [selectImage, setSelectImage] = useState<File | null>(null);
 
   const onChangeFileHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -22,18 +29,16 @@ const InputFileGroup: FC<InputFileGroupProps> = ({ field, onSelectFile }) => {
   return (
     <div className="mb-3">
       <label htmlFor={field} className="form-label">
+        <h6>{label}</h6>
         {selectImage == null ? (
           <img
-            src="https://i.insider.com/63fb81d984099d001960d513?width=1136&format=jpeg"
+            width="150"
+            className="img-fluid"
+            src={defaultImage}
             style={{ cursor: "pointer" }}
-            width="200"
           />
         ) : (
-          <img
-            src={URL.createObjectURL(selectImage)}
-            style={{ cursor: "pointer" }}
-            width="200"
-          />
+          <img width="150" src={URL.createObjectURL(selectImage)} />
         )}
       </label>
 
