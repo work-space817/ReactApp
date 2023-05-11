@@ -1,6 +1,9 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
+import http from "../../../http_common";
 import InputGroup from "../../common/InputGroup";
-import { ILoginPage } from "./types";
+import { ILoginPage, ILoginPageError, IUser } from "./types";
+import jwt_decode from "jwt-decode";
+import setAuthToken from "../../../helpers/setAuthToken";
 
 const LoginPage = () => {
   //створили конкретни екземлеяр на основі нашого інтерфейсу
@@ -12,19 +15,35 @@ const LoginPage = () => {
   //При зміни значення елемента в useState компонент рендериться повторно і виводить нові значення
   const [data, setData] = useState<ILoginPage>(init);
 
-  console.log("Render Login component", "------SALO----");
+  // console.log("Render Login component", "------SALO----");
 
   //console.log("Дестурктуризація", {...data, password: "123456"});
 
-  const onSubmitHandler = (e: any) => {
+  const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     console.log("Ми відправляємо на сервер", data);
+    http
+      .post("api/account/login", data)
+      .then((resp) => {
+        const token = resp.data.token as string;
+        setAuthToken(token);
+        const user = jwt_decode<IUser>(token);
+        console.log("Вхід успішний", token);
+        console.log("Jwt decode", user);
+      })
+      .catch((badReqeust) => {
+        //Помилки, які ідуть від сервера
+        const errors = badReqeust.response.data.errors as ILoginPageError;
+        console.log("Вхід не успішний", badReqeust.response.data);
+        console.log("Errors ", errors);
+      });
     //setData({email: "pylyp", password: "123456"});
   };
 
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log("Щось вводити в інтпут");
-    console.log(e.target.name, e.target.value);
+    //console.log("Щось вводити в інтпут");ь
+    //console.log(e.target.name, e.target.value);
     setData({ ...data, [e.target.name]: e.target.value });
   };
   return (

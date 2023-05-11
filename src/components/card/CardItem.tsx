@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { ICard } from "./types";
 import "./Card.css";
+import { APP_ENV } from "../../env";
 
 interface ICardProps {
   card: ICard;
@@ -9,8 +10,12 @@ interface ICardProps {
 const CardItem: FC<ICardProps> = ({ card }) => {
   return (
     <div className="col">
-      <div className="card h-100 shadow-sm">
-        <img src={card.image} alt="" style={{ scale: "0.8" }} />
+      <div className="card shadow-sm">
+        <img
+          src={`${APP_ENV.BASE_URL}images/150_${card.image}`}
+          alt=""
+          style={{ scale: "0.8" }}
+        />
         <div className="label-top shadow-sm">{card.priority}</div>
         <div className="card-body">
           <div className="clearfix mb-3">

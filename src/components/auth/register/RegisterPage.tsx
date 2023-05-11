@@ -1,183 +1,167 @@
 import { ChangeEvent, useState } from "react";
-import { IRegisterPage, ISelectItem } from "./types";
 import InputFileGroup from "../../common/InputFileGroup";
+import InputGroup from "../../common/InputGroup";
+import { IRegisterError, IRegisterPage, ISelectItem } from "./types";
+import http from "../../../http_common";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 const RegisterPage = () => {
   //створили конкретни екземлеяр на основі нашого інтерфейсу
   const init: IRegisterPage = {
-    firstName: "",
-    lastName: "",
     email: "",
-    phone: 0,
-    image: null,
-    countyId: 0,
+    firstName: "",
+    secondName: "",
+    photo: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   };
 
   //При зміни значення елемента в useState компонент рендериться повторно і виводить нові значення
-  const [data, setData] = useState<IRegisterPage>(init);
+  const [error, setError] = useState<IRegisterError>();
 
-  // const [countries, setCountries] = useState<ISelectItem[]>([
-  //   {
-  //     id: 1,
-  //     name: "Україна",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Польща",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Амерка USA",
-  //   },
-  // ]);
-
-  //console.log("Дестурктуризація", {...data, password: "123456"});
-
-  const onSubmitHandler = (e: any) => {
-    e.preventDefault();
-    console.log("Ми відправляємо на сервер", data);
-    if (data.password != data.confirmPassword) {
-      console.error("Паролі не співпадають");
+  const onFormikSubmit = async (values: IRegisterPage) => {
+    console.log("Formik Submit Form to Server", values);
+    try {
+      const result = await http.post("api/account/register", values); //відправка результатів вводу на сервер
+      console.log("Result server good", result);
+    } catch (err: any) {
+      const error = err.response.data.errors as IRegisterError; //повернення помилок від сервера через інтерфейс
+      if (error.email) {
+        setFieldError("email", error.email[0]);
+        return;
+      }
+      setError(error);
+      console.log("Bad request", err);
     }
   };
 
-  const onChangeHandler = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setData({ ...data, [e.target.name]: e.target.value });
-  };
+  const registerSchema = yup.object({
+    //схема валідації форми
 
-  const onChangeFileHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const file = files[0];
-      console.log("Ви обрали файл", file);
-      setData({ ...data, [e.target.name]: file });
-    }
-    e.target.value = "";
-  };
+    email: yup
+      .string()
+      .required("Вкажіть пошту")
+      .email("Введіть коректно пошту"),
 
-  // const viewCountriesOption = countries.map((c) => (
-  //   <option key={c.id} value={c.id}>
-  //     {c.name}
-  //   </option>
-  // ));
+    firstName: yup.string().required("Вкажіть ім'я"),
+    secondName: yup.string().required("Вкажіть прізвище"),
+    photo: yup.string().required("Оберіть фото"),
+    phone: yup.string().required("Вкажіть телефон"),
+
+    password: yup
+      .string()
+      .min(5, "Пароль повинен містити мініму 5 символів")
+      .matches(/[0-9a-zA-Z]/, "Пароль може містить латинські символи і цифри") //RegExp
+      .required("Поле не повинне бути пустим"),
+
+    confirmPassword: yup
+      .string()
+      .min(5, "Пароль повинен містити мініму 5 символів")
+      .oneOf([yup.ref("password")], () => "Паролі повинні співпадати")
+      .required("Поле не повинне бути пустим"),
+  });
+
+  const formik = useFormik({
+    initialValues: init,
+    onSubmit: onFormikSubmit,
+    validationSchema: registerSchema,
+  });
+
+  const {
+    values,
+    touched,
+    errors,
+    handleSubmit,
+    handleChange,
+    setFieldValue,
+    setFieldError,
+  } = formik;
 
   return (
     <>
       <h1 className="text-center">Реєстрація на сайт</h1>
-      <form onSubmit={onSubmitHandler} className="col-md-6 offset-md-3">
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            First Name
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="firstName"
-            name="firstName"
-            value={data.firstName}
-            onChange={onChangeHandler}
-            aria-describedby="emailHelp"
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="col-md-6 offset-md-3">
+        <InputGroup
+          label="Електронна адреса"
+          field="email"
+          value={values.email}
+          onChange={handleChange}
+          errors={error?.email}
+          error={errors.email}
+          touched={touched.email}
+        />
 
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            Last Name
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="lastName"
-            name="lastName"
-            value={data.lastName}
-            onChange={onChangeHandler}
-            aria-describedby="emailHelp"
-          />
+        <div className="row">
+          <div className="col-md-6">
+            <InputGroup
+              label="Прізвище"
+              field="secondName"
+              value={values.secondName}
+              onChange={handleChange}
+              error={errors.secondName}
+              touched={touched.secondName}
+            />
+          </div>
+          <div className="col-md-6">
+            <InputGroup
+              label="Ім'я"
+              field="firstName"
+              value={values.firstName}
+              onChange={handleChange}
+              error={errors.firstName}
+              touched={touched.firstName}
+            />
+          </div>
         </div>
-
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="password"
-            name="password"
-            onChange={onChangeHandler}
-            value={data.password}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">
-            Confirm Password
-          </label>
-          <input
-            type="password"
-            className="form-control"
-            id="confirmPassword"
-            name="confirmPassword"
-            onChange={onChangeHandler}
-            value={data.confirmPassword}
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            Email
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="email"
-            name="email"
-            value={data.email}
-            onChange={onChangeHandler}
-            aria-describedby="emailHelp"
-          />
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">
-            Phone
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="phone"
-            name="phone"
-            value={data.phone}
-            onChange={onChangeHandler}
-            aria-describedby="emailHelp"
-          />
-        </div>
-
-        {/* <div className="mb-3">
-          <label htmlFor="countryId" className="form-label">
-            Країна
-          </label>
-          <select
-            name="countyId"
-            className="form-select"
-            id="countryId"
-            onChange={onChangeHandler}
-          >
-            <option selected>Open this select menu</option>
-            {viewCountriesOption}
-          </select>
-        </div> */}
 
         <InputFileGroup
-          field="image"
-          onSelectFile={(file) => {
-            setData({ ...data, image: file });
+          label="Оберіть фото для аватар"
+          field="photo"
+          onSelectFile={(base64) => {
+            setFieldValue("photo", base64);
           }}
+          errors={error?.photo}
+          error={errors.photo}
+          touched={touched.photo}
         />
+
+        <InputGroup
+          label="Телефон"
+          field="phone"
+          value={values.phone}
+          onChange={handleChange}
+          error={errors.phone}
+          touched={touched.phone}
+        />
+
+        <div className="row">
+          <div className="col-md-6">
+            <InputGroup
+              label="Пароль"
+              type="password"
+              field="password"
+              value={values.password}
+              onChange={handleChange}
+              errors={error?.password}
+              error={errors.password}
+              touched={touched.password}
+            />
+          </div>
+          <div className="col-md-6">
+            <InputGroup
+              label="Підтвердження пароль"
+              type="password"
+              field="confirmPassword"
+              value={values.confirmPassword}
+              onChange={handleChange}
+              errors={error?.confirmPassword}
+              error={errors.confirmPassword}
+              touched={touched.confirmPassword}
+            />
+          </div>
+        </div>
 
         <button type="submit" className="btn btn-primary">
           Реєстрація

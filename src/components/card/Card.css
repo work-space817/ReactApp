@@ -27,6 +27,7 @@ h2 {
   border: 0;
   border-radius: 1rem;
   color: black;
+  height: fit-content;
 }
 .card-img,
 .card-img-top {
@@ -35,7 +36,7 @@ h2 {
 }
 .card h5 {
   overflow: hidden;
-  height: 56px;
+  height: 36px;
   font-weight: 900;
   font-size: 1rem;
 }

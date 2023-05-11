@@ -7,6 +7,8 @@ import { ICardItem } from "../product/types";
 import axios from "axios";
 import CardList from "../card/CardList";
 import { ICard } from "../card/types";
+import { APP_ENV } from "../../env";
+import http from "../../http_common";
 
 const HomePage = () => {
   // const [list, setList] = useState<ICategoryItem[]>([
@@ -47,15 +49,13 @@ const HomePage = () => {
 
   async function fetchItem() {
     try {
-      const response = await axios.get<ICard[]>(
-        "https://f21.allin.ml/api/Categories/list"
-      );
+      const response = await http.get<ICard[]>("api/Categories/list");
       setitems(response.data);
     } catch (error) {
       alert(error);
     }
   }
-  console.log(items);
+  console.log("render", APP_ENV);
 
   return (
     <>
