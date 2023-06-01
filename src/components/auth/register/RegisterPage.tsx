@@ -19,43 +19,41 @@ const RegisterPage = () => {
   };
 
   //При зміни значення елемента в useState компонент рендериться повторно і виводить нові значення
+  // const [data, setData] = useState<IRegisterPage>(init);
   const [error, setError] = useState<IRegisterError>();
 
-  const onFormikSubmit = async (values: IRegisterPage) => {
+
+
+  const onFormikSubmit=async (values: IRegisterPage) => {
     console.log("Formik Submit Form to Server", values);
-    try {
-      const result = await http.post("api/account/register", values); //відправка результатів вводу на сервер
+     try{
+      const result = await http.post("api/account/register", values);
       console.log("Result server good", result);
-    } catch (err: any) {
-      const error = err.response.data.errors as IRegisterError; //повернення помилок від сервера через інтерфейс
-      if (error.email) {
+    } catch(err: any) {
+      const error = err.response.data.errors as IRegisterError;
+      if(error.email)
+      {
         setFieldError("email", error.email[0]);
         return;
       }
       setError(error);
       console.log("Bad request", err);
     }
-  };
+  }
 
   const registerSchema = yup.object({
-    //схема валідації форми
-
-    email: yup
-      .string()
+    email: yup.string()
       .required("Вкажіть пошту")
       .email("Введіть коректно пошту"),
-
     firstName: yup.string().required("Вкажіть ім'я"),
     secondName: yup.string().required("Вкажіть прізвище"),
     photo: yup.string().required("Оберіть фото"),
     phone: yup.string().required("Вкажіть телефон"),
-
     password: yup
       .string()
       .min(5, "Пароль повинен містити мініму 5 символів")
-      .matches(/[0-9a-zA-Z]/, "Пароль може містить латинські символи і цифри") //RegExp
+      .matches(/[0-9a-zA-Z]/, "Пароль може містить латинські символи і цифри")
       .required("Поле не повинне бути пустим"),
-
     confirmPassword: yup
       .string()
       .min(5, "Пароль повинен містити мініму 5 символів")
@@ -66,18 +64,10 @@ const RegisterPage = () => {
   const formik = useFormik({
     initialValues: init,
     onSubmit: onFormikSubmit,
-    validationSchema: registerSchema,
+    validationSchema: registerSchema
   });
 
-  const {
-    values,
-    touched,
-    errors,
-    handleSubmit,
-    handleChange,
-    setFieldValue,
-    setFieldError,
-  } = formik;
+  const { values, touched, errors, handleSubmit, handleChange, setFieldValue, setFieldError } = formik;
 
   return (
     <>
@@ -125,6 +115,7 @@ const RegisterPage = () => {
           errors={error?.photo}
           error={errors.photo}
           touched={touched.photo}
+        
         />
 
         <InputGroup

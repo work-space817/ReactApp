@@ -15,7 +15,7 @@ const Slider = () => {
     { img: car3 },
   ]);
 
-  console.log("cars");
+  // console.log("cars");
 
   return (
     <>
@@ -26,8 +26,8 @@ const Slider = () => {
       >
         <div className="carousel-inner">
           {items.map((item, index) => (
-            <div
-              className={classNames("carousel-item", { active: index === 1 })}
+            <div key={index}
+              className={classNames("carousel-item", {"active": index===1})}
             >
               <img src={item.img} className="d-block w-100" alt="..." />
             </div>

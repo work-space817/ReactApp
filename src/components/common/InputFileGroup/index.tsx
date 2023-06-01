@@ -1,15 +1,14 @@
 import { ChangeEvent, FC, InputHTMLAttributes, useState } from "react";
 import defaultImage from "../../../assets/defaultImage.jpg";
+import "./style.css";
 
 interface InputFileGroupProps extends InputHTMLAttributes<HTMLInputElement> {
-  //посилаємось на глобальні InputHTML атрибути
-  //наслідування інтер
-  label?: string; // "?" - передача необов'язкових пропсів
+  label?: string;
   field: string;
-  onSelectFile: (base64: string) => void; //base64 - формат фото
+  onSelectFile: (base64: string) => void;
   errors?: string[];
-  error?: string | undefined;
-  touched?: boolean | undefined;
+  error?: string|undefined,
+  touched?: boolean|undefined
 }
 
 const InputFileGroup: FC<InputFileGroupProps> = ({
@@ -18,7 +17,7 @@ const InputFileGroup: FC<InputFileGroupProps> = ({
   onSelectFile,
   errors,
   error,
-  touched,
+  touched
 }) => {
   const [selectImage, setSelectImage] = useState<File | null>(null);
 
@@ -26,7 +25,8 @@ const InputFileGroup: FC<InputFileGroupProps> = ({
     const files = e.target.files;
     if (files) {
       const file = files[0];
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif"]; //Перевірка на тип обраного файлу - допустимий тип jpeg, png, gif
+      //Перевірка на тип обраного файлу - допустимий тип jpeg, png, gif
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!allowedTypes.includes(file.type)) {
         alert("Не допустимий тип файлу");
         return;
@@ -48,8 +48,7 @@ const InputFileGroup: FC<InputFileGroupProps> = ({
       <label htmlFor={field} className="form-label">
         <h6>{label}</h6>
         {selectImage == null ? (
-          <img
-            width="150"
+          <img width="150"
             className="img-fluid"
             src={defaultImage}
             style={{ cursor: "pointer" }}
@@ -66,14 +65,18 @@ const InputFileGroup: FC<InputFileGroupProps> = ({
         id={field}
         onChange={onChangeFileHandler}
       />
-      {errors && (
+      {(errors) && (
         <div className="alert alert-danger">
           {errors.map((err, index) => (
             <span key={index}>{err}</span>
           ))}
         </div>
       )}
-      {error && touched && <div className="alert alert-danger">{error}</div>}
+      {(error && touched) && (
+        <div className="alert alert-danger">
+          {error}
+        </div>
+      )}
     </div>
   );
 };

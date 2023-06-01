@@ -8,7 +8,7 @@ export interface IRegisterPage {
     confirmPassword: string;
   }
 
-  export interface IRegisterError { //нам повертається масив помилок, тому об'єекти інтерфейсу записуємо в []
+  export interface IRegisterError {
     email: string[],
     password: string[],
     confirmPassword: string[],

@@ -1,40 +1,4 @@
 body {
-  padding-bottom: 3rem;
   padding-top: 3rem;
-  min-height: 100vh;
-
-  background-image: linear-gradient(
-    345deg,
-    hsl(0deg 0% 0%) 27%,
-    hsl(282deg 96% 18%) 93%,
-    hsl(278deg 80% 25%) 100%,
-    hsl(273deg 69% 27%) 100%
-  );
-  background-position: center;
-  background-size: cover;
-  box-shadow: inset 0px 0px 80px 80px rgba(0, 0, 0, 0.16);
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-  color: grey;
-}
-
-.container {
-  color: white;
-}
-
-.btn-outline-success {
-  --bs-btn-color: rgb(255 255 255);
-  --bs-btn-border-color: rgb(157 0 255);
-  --bs-btn-hover-bg: rgb(157 0 255);
-  --bs-btn-hover-border-color: rgb(157 0 255);
-  --bs-btn-active-bg: rgb(157 0 255);
-  --bs-btn-active-border-color: rgb(157 0 255);
-  --bs-btn-disabled-color: rgb(157 0 255);
-  --bs-btn-disabled-border-color: rgb(157 0 255);
-}
-.container-card {
-  position: relative;
-}
-.row {
-  margin-right: 2rem;
-  margin-left: 1rem;
+  /* padding-bottom: 3rem; */
 }
