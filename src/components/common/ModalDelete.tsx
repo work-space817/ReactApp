@@ -12,22 +12,31 @@ const ModalDelete: FC<Props> = ({ id, text, deleteFunc }) => {
 
   const showModal = () => {
     const modal = modalRef.current;
-    if (modal !== null) {
+    if (modal != null) {
       const bsModal = new Modal(modal, {});
       bsModal.show();
     }
   };
 
+  const confirmDelete = () => {
+    const modal = modalRef.current;
+    if (modal != null) {
+      const bsModal = Modal.getInstance(modal);
+      bsModal?.hide();
+      deleteFunc(id);
+    }
+  }
+
   return (
     <>
-      <button className="btn" onClick={showModal}>
-        delete
+      <button className="btn btn-danger" onClick={showModal}>
+        Delete
       </button>
       <div className="modal fade" ref={modalRef} tabIndex={-1}>
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Modal title</h5>
+              <h5 className="modal-title">Видалення</h5>
               <button
                 type="button"
                 className="btn-close"
@@ -36,7 +45,7 @@ const ModalDelete: FC<Props> = ({ id, text, deleteFunc }) => {
               ></button>
             </div>
             <div className="modal-body">
-              <p>Modal body text goes here.</p>
+              <p>{text}</p>
             </div>
             <div className="modal-footer">
               <button
@@ -44,10 +53,10 @@ const ModalDelete: FC<Props> = ({ id, text, deleteFunc }) => {
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
-                Close
+                Скасувать
               </button>
-              <button type="button" className="btn btn-primary">
-                Save changes
+              <button type="button" className="btn btn-danger" onClick={confirmDelete}>
+                Видалить
               </button>
             </div>
           </div>

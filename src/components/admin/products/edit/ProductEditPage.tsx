@@ -1,36 +1,29 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import http from "../../../../http_common";
 import {
   ICategorySelect,
-  IProductCreate,
-  IProductCreateResult,
+  IProductEdit,
+  IProductGetItem,
+  IProductImageItem,
 } from "../types";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import InputGroup from "../../../common/InputGroup";
-import { useEffect, useState } from "react";
-import http from "../../../../http_common";
-import InputFileGroup from "../../../common/InputFileGroup";
-import InputFileProductGroup from "../../../common/InputFileProductGroup";
-import { useNavigate } from "react-router-dom";
-import classNames from "classnames";
-import { Editor } from "@tinymce/tinymce-react";
 import EditorTiny from "../../../common/EditorTiny";
+import classNames from "classnames";
+import InputFileProductGroup from "../../../common/InputFileProductGroup";
 
-const ProductCreatePage = () => {
-  //Навігація
-  const navigate = useNavigate();
+const ProductEditPage = () => {
+  const { id } = useParams();
   //Зберігаємо списко категорій
   const [categories, setCategories] = useState<ICategorySelect[]>([]);
-
-  useEffect(() => {
-    //Посилаємо запит на сервер по список категорій для тега select
-    http.get<ICategorySelect[]>("api/categories/list").then((resp) => {
-      setCategories(resp.data);
-      //console.log("categories", resp.data);
-    });
-  }, []);
+  //Фото, які були у товару до редагування
+  const [imgViews, setImgViews] = useState<IProductImageItem[]>([]);
 
   //створили конкретни екземлеяр на основі нашого інтерфейсу
-  const init: IProductCreate = {
+  const init: IProductEdit = {
+    id: id,
     name: "",
     priority: 0,
     categoryId: 0,
@@ -38,25 +31,13 @@ const ProductCreatePage = () => {
     ids: [],
     price: 0,
   };
+
   //Дані, які приходять після валіації із форміка
-  const onFormikSubmit = async (values: IProductCreate) => {
+  const onFormikSubmit = async (values: IProductEdit) => {
     //Вивовдимо дані на консоль, щоб їх побачить
     console.log("Formik submit data", values);
-    try {
-      //запит на створення продукта
-      const result = await http.post<IProductCreateResult>(
-        "api/products/add",
-        values
-      );
-      //виводимо id продукта із БД
-      console.log("result id = ", result.data.id);
-      //переходимо до списку продуктів у нашому випадку на один рівень назад
-      navigate("..");
-    } catch (error) {
-      //якщо запит на сервер буде не успішний
-      console.log("Send data server error"); //вивдимо помилку на консоль
-    }
   };
+
   //Схема валідації даних
   const validSchema = yup.object({
     name: yup.string().required("Вкажіть назву"), //валідуємо назву товару
@@ -73,12 +54,14 @@ const ProductCreatePage = () => {
       .min(1, "Мінімального одна фотка для товару")
       .required("Оберіть хочаб одне фото"), //перевіряємо чи масив має елементи
   });
+
   //створюємо formik
   const formik = useFormik({
     initialValues: init, //початкові налаштування для полів
     onSubmit: onFormikSubmit, //метод, який спрацьовує, коли усі дані у форміку валідні
     validationSchema: validSchema, //схема валідації даних
   });
+
   const {
     values, //отримуємо доступ до полів у форміку
     touched, //Відстлідковує подію виклику методу handleSubmit
@@ -88,9 +71,30 @@ const ProductCreatePage = () => {
     setFieldValue, //можна задавати значення полів через іменовані параметри (імя поля, значення)
   } = formik; //сам об'єкт із якого ми витягуємо потрібні властивості форми
 
+  useEffect(() => {
+    //Посилаємо запит на сервер по список категорій для тега select
+    http.get<ICategorySelect[]>("api/categories/list").then((resp) => {
+      setCategories(resp.data);
+      http.get<IProductGetItem>(`api/products/get/${id}`).then((resp) => {
+        //console.log("Get product info", resp.data);
+        const product = resp.data;
+        setFieldValue("name", product.name);
+        setFieldValue("categoryId", product.categoryId);
+        setFieldValue("description", product.description);
+        setFieldValue("price", product.price);
+        setFieldValue("priority", product.priority);
+        setFieldValue("ids", [product.images.map((x) => x.id)]);
+        setImgViews(product.images);
+        //setFieldValue("ids", product.priority);
+      });
+      //console.log("categories", resp.data);
+    });
+    console.log("Get data view Product edit", id);
+  }, [id]);
+
   return (
     <>
-      <h1 className="text-center">Додати продукт</h1>
+      <h1 className="text-center">Зміна продукта</h1>
       {/* Форма, яка зберігає значення усіх полів */}
       <form onSubmit={handleSubmit} className="col-md-10 offset-md-1">
         {/* Значення - Назва товару */}
@@ -112,6 +116,7 @@ const ProductCreatePage = () => {
           touched={touched.priority}
           type={"number"}
         />
+
         {/* Використовує наш компонент для вводу опису, який формується за допомогою TinyMCE */}
         <EditorTiny
           value={values.description} //Значення, яке ми вводимо в поле
@@ -124,6 +129,7 @@ const ProductCreatePage = () => {
             setFieldValue("description", text); //Текст, який в середині інпуту, записуємо у формік в поле description
           }}
         />
+
         {/* Значення ціни */}
         <InputGroup
           label="Ціна"
@@ -134,6 +140,7 @@ const ProductCreatePage = () => {
           touched={touched.price}
           type={"number"}
         />
+
         <div className="mb-3">
           <label htmlFor="categoryId" className="form-label">
             Оберіть категорію
@@ -144,6 +151,7 @@ const ProductCreatePage = () => {
               "is-invalid": errors.categoryId && touched.categoryId,
             })}
             defaultValue={values.categoryId} //Значення, яке міститься в select
+            value={values.categoryId}
             aria-label="Default select example"
             onChange={handleChange} //якщо значення міняється, воно записується у формік
             name="categoryId" //значення поля у форміку = categoryId - якщо його не буде - formik - не буде знать, яке поле оновлять
@@ -164,6 +172,7 @@ const ProductCreatePage = () => {
             })}
           </select>
         </div>
+
         {/* Відповідає за вибір фото для товару, і вивід самих фото на екран. Дані
         фото передаються на сервер і id записуються у formik */}
         <InputFileProductGroup
@@ -183,12 +192,15 @@ const ProductCreatePage = () => {
               values.ids.filter((x) => x !== id)
             );
           }}
+          imgView={imgViews}
         />
+
         <button type="submit" className="btn btn-primary">
-          Створити товар
+          Зберегти
         </button>
       </form>
     </>
   );
 };
-export default ProductCreatePage;
+
+export default ProductEditPage;

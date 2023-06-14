@@ -10,17 +10,20 @@ const CategoriesListPage = () => {
 
   const [list, setList] = useState<ICategoryItem[]>([]);
 
-  const onDeleteCategory = async (id: number) => {
+  const onDeleteCategory=async (id: number) => {
     try {
       console.log("delete id", id);
+      
+      await http.delete("api/categories/delete/"+id);
+      setList(list.filter(x=>x.id!=id));
 
-      await http.delete("api/categories/delete/" + id);
-      setList(list.filter((x) => x.id != id));
-    } catch (error) {
+    } catch(error) {
       console.log("Error Delete", error);
+      
     }
     //console.log("Delete product: ", id);
-  };
+  }
+
 
   const viewList = list.map((item) => {
     return (
@@ -48,19 +51,18 @@ const CategoriesListPage = () => {
   useEffect(() => {
     console.log("Working useEffect");
     setLoading(true);
-    http.get<ICategoryItem[]>(`api/categories/list`).then((resp) => {
-      console.log("Server responce", resp.data);
-      const { data } = resp;
-      setList(data);
-      setLoading(false);
-    });
-  }, []);
+    http.get<ICategoryItem[]>(`api/categories/list`)
+      .then(resp => {
+        console.log("Server responce", resp.data); 
+        const {data} = resp;
+        setList(data);
+        setLoading(false);
+      });
+  },[]);
   return (
     <>
       <h1 className="text-center">Категорії</h1>
-      <Link to="/admin/categories/create" className="btn btn-success">
-        Додати
-      </Link>
+      <Link to="/admin/categories/create" className="btn btn-success">Додати</Link>
       <table className="table">
         <thead>
           <tr>
@@ -70,7 +72,9 @@ const CategoriesListPage = () => {
             <th></th>
           </tr>
         </thead>
-        <tbody>{viewList}</tbody>
+        <tbody>
+          {viewList}
+        </tbody>
       </table>
     </>
   );

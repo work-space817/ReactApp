@@ -1,7 +1,10 @@
+
 export const config = {
     height: 500,
     language: "uk",
     menubar: true,
+    images_file_types: 'jpg,jpeg',
+    block_unsupported_drop: false,
     menu: {
       file: {
         title: "File",
